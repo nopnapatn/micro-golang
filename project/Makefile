@@ -1,4 +1,4 @@
-FRONT_END_BINARY=frontApp
+FRONT_END_BINARY=clientApp
 BROKER_BINARY=brokerApp
 
 ## up: starts all containers in the background without forcing build
@@ -29,7 +29,7 @@ build_broker:
 
 ## build_front: builds the frone end binary
 build_front:
-	@echo "Building front end binary..."
+	@echo "Building client end binary..."
 	cd ../client && env CGO_ENABLED=0 go build -o ${FRONT_END_BINARY} ./cmd/web
 	@echo "Done!"
 
