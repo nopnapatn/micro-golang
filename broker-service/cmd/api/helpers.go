@@ -13,29 +13,31 @@ type jsonResponse struct {
 	Data    any    `json:"data,omitempty"`
 }
 
+// readJSON tries to read the body of a request and converts it into JSON
 func (app *Config) readJSON(w http.ResponseWriter, r *http.Request, data any) error {
-	maxBytes := 1048576
+	maxBytes := 1048576 // one megabyte
 
 	r.Body = http.MaxBytesReader(w, r.Body, int64(maxBytes))
 
 	dec := json.NewDecoder(r.Body)
-	e := dec.Decode(data)
-	if e != nil {
-		return e
+	err := dec.Decode(data)
+	if err != nil {
+		return err
 	}
 
-	e = dec.Decode(&struct{}{})
-	if e != io.EOF {
+	err = dec.Decode(&struct{}{})
+	if err != io.EOF {
 		return errors.New("body must have only a single JSON value")
 	}
 
 	return nil
 }
 
+// writeJSON takes a response status code and arbitrary data and writes a json response to the client
 func (app *Config) writeJSON(w http.ResponseWriter, status int, data any, headers ...http.Header) error {
-	out, e := json.Marshal(data)
-	if e != nil {
-		return e
+	out, err := json.Marshal(data)
+	if err != nil {
+		return err
 	}
 
 	if len(headers) > 0 {
@@ -46,15 +48,17 @@ func (app *Config) writeJSON(w http.ResponseWriter, status int, data any, header
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
-	_, e = w.Write(out)
-	if e != nil {
-		return e
+	_, err = w.Write(out)
+	if err != nil {
+		return err
 	}
 
 	return nil
 }
 
-func (app *Config) errorJSON(w http.ResponseWriter, e error, status ...int) error {
+// errorJSON takes an error, and optionally a response status code, and generates and sends
+// a json error response
+func (app *Config) errorJSON(w http.ResponseWriter, err error, status ...int) error {
 	statusCode := http.StatusBadRequest
 
 	if len(status) > 0 {
@@ -63,7 +67,7 @@ func (app *Config) errorJSON(w http.ResponseWriter, e error, status ...int) erro
 
 	var payload jsonResponse
 	payload.Error = true
-	payload.Message = e.Error()
+	payload.Message = err.Error()
 
 	return app.writeJSON(w, statusCode, payload)
 }

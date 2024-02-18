@@ -1,4 +1,4 @@
-FRONT_END_BINARY=clientApp
+CLIENT_BINARY=clientApp
 BROKER_BINARY=brokerApp
 AUTH_BINARY=authApp
 
@@ -34,20 +34,19 @@ build_auth:
 	cd ../auth-service && env GOOS=linux CGO_ENABLED=0 go build -o ${AUTH_BINARY} ./cmd/api
 	@echo "Done!"
 
-
-## build_front: builds the frone end binary
-build_front:
-	@echo "Building client end binary..."
-	cd ../client && env CGO_ENABLED=0 go build -o ${FRONT_END_BINARY} ./cmd/web
+## build_client: builds the client binary
+build_client:
+	@echo "Building client binary..."
+	cd ../client && env CGO_ENABLED=0 go build -o ${CLIENT_BINARY} ./cmd/web
 	@echo "Done!"
 
-## start: starts the front end
-start: build_front
+## start: starts the client
+start: build_client
 	@echo "Starting client"
-	cd ../client && ./${FRONT_END_BINARY} &
+	cd ../client && ./${CLIENT_BINARY} &
 
 ## stop: stop the front end
 stop:
 	@echo "Stopping client..."
-	@-pkill -SIGTERM -f "./${FRONT_END_BINARY}"
+	@-pkill -SIGTERM -f "./${CLIENT_BINARY}"
 	@echo "Stopped client!"
