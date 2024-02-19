@@ -8,11 +8,9 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-
-
 const (
-	webPort = "80"
-	rpcPort = "5001"
+	webPort  = "80"
+	rpcPort  = "5001"
 	mongoURL = "mongodb://mongo:27017"
 	gRpcPort = "50001"
 )
@@ -20,7 +18,6 @@ const (
 var client *mongo.Client
 
 type Config struct {
-
 }
 
 func main() {
